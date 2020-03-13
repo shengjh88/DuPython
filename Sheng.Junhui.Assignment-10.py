@@ -18,14 +18,14 @@ from datetime import datetime
 #import mpl_finance 
 import mpl_finance as mpf
 
+#Define the function to decide if the string is number.
 def is_number(s):
     try:
         float(s)
         return True
     except ValueError:
         pass
- 
-
+    
     return False
 
 
@@ -46,6 +46,8 @@ class Stock():
         """Add new trading data for a date"""
         self.stockClose.append(close_price)
         self.stockDateList.append(date)
+
+        #If the following string from the file is not number, just put a number 0
         if is_number(open_price) == True:
             self.stockOpen.append(open_price)
         else:
@@ -87,10 +89,12 @@ for stock in dataSet:
                                                              stock['Low'],\
                                                              stock['Volume'])
 
-#Drawd the trend subgraph
+#Start to draw the trend subgraph
 
+#set up the figure size to hold two graphs
 fig = plt.figure(figsize=(12,6))
 
+#add the first subplot for the trend
 ax1 = fig.add_subplot(121)
 
 #Generate plot data for the trend graph
@@ -109,12 +113,13 @@ plt.ylabel("Close Price")
 #Show the stock graph
 ax1.legend()
 
-
+#add the second subplot for the candelstick graph
 ax2 = fig.add_subplot(122)
 
 #Generate plot data for the candlestick graph
 candle_data_list = []
 
+#Generate plot data for the candlestick graph
 for stock in stockDictionary:
         CloseData = stockDictionary[stock]['stock'].stockClose
         dates = matplotlib.dates.date2num(stockDictionary[stock]['stock'].stockDateList)
@@ -124,19 +129,21 @@ for stock in stockDictionary:
 		
         symbol = stockDictionary[stock]['stock'].stockSymbol
 
+        #This time, only show the candlestick for MSFT
         if symbol == 'MSFT':
             
             for i in range(len(CloseData)):
                 candle_data_list.append((dates[i],float(OpenData[i]), float(HighData[i]), \
                                          float(LowData[i]), CloseData[i]))
-
+#setup the displays for the candlestick graph
 ax2.xaxis_date()
 plt.xticks(rotation=45)
 
 plt.title("Stock candlestick Graph: MSFT")
 plt.xlabel("Trading Date")
 plt.ylabel("Stock Price")
-                
+
+#Call the mpl_finance library to show the candlestick                
 mpf.candlestick_ohlc(ax2,candle_data_list,width=1.0,colorup='r',colordown='green', alpha=1)
 
 
